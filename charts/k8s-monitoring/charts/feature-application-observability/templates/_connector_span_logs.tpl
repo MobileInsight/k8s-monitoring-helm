@@ -21,6 +21,30 @@ otelcol.connector.spanlogs "{{ .name | default "default" }}" {
 {{- if .Values.connectors.spanLogs.labels }}
   labels = {{ .Values.connectors.spanLogs.labels | toJson }}
 {{- end }}
+{{- if .Values.connectors.spanLogs.overrides }}
+  overrides {
+    {{- with .Values.connectors.spanLogs.overrides }}
+    {{- if .logs_instance_tag }}
+    logs_instance_tag = "{{ .logs_instance_tag }}"
+    {{- end }}
+    {{- if .service_key }}
+    service_key = "{{ .service_key }}"
+    {{- end }}
+    {{- if .span_name_key }}
+    span_name_key = "{{ .span_name_key }}"
+    {{- end }}
+    {{- if .status_key }}
+    status_key = "{{ .status_key }}"
+    {{- end }}
+    {{- if .duration_key }}
+    duration_key = "{{ .duration_key }}"
+    {{- end }}
+    {{- if .trace_id_key }}
+    trace_id_key = "{{ .trace_id_key }}"
+    {{- end }}
+    {{- end }}
+  }
+{{- end }}
 
   output {
 {{- if and .logs .Values.logs.enabled }}
