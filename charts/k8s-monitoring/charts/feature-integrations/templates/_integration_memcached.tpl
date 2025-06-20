@@ -13,3 +13,6 @@
 {{- end }}
 
 {{- define "integrations.memcached.type.logs" }}false{{- end }}
+
+{{- define "secrets.list.integration.memcached" }}
+{{- end }}

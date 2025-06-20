@@ -13,3 +13,6 @@
 {{- end }}
 
 {{- define "integrations.squid.type.logs" }}false{{- end }}
+
+{{- define "secrets.list.integration.squid" }}
+{{- end }}

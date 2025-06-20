@@ -13,3 +13,6 @@
 {{- end }}
 
 {{- define "integrations.cadvisor.type.logs" }}false{{- end }}
+
+{{- define "secrets.list.integration.cadvisor" }}
+{{- end }}

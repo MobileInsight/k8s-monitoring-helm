@@ -13,3 +13,6 @@
 {{- end }}
 
 {{- define "integrations.statsd.type.logs" }}false{{- end }}
+
+{{- define "secrets.list.integration.statsd" }}
+{{- end }}

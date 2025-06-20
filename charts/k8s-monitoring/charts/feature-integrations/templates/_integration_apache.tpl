@@ -13,3 +13,6 @@
 {{- end }}
 
 {{- define "integrations.apache.type.logs" }}false{{- end }}
+
+{{- define "secrets.list.integration.apache" }}
+{{- end }}

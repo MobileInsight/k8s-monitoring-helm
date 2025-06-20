@@ -13,3 +13,6 @@
 {{- end }}
 
 {{- define "integrations.snmp.type.logs" }}false{{- end }}
+
+{{- define "secrets.list.integration.snmp" }}
+{{- end }}

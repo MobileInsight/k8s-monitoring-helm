@@ -13,3 +13,6 @@
 {{- end }}
 
 {{- define "integrations.consul.type.logs" }}false{{- end }}
+
+{{- define "secrets.list.integration.consul" }}
+{{- end }}

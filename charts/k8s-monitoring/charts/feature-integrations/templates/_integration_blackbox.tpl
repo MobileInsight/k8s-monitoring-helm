@@ -13,3 +13,6 @@
 {{- end }}
 
 {{- define "integrations.blackbox.type.logs" }}false{{- end }}
+
+{{- define "secrets.list.integration.blackbox" }}
+{{- end }}

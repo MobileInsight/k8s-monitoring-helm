@@ -13,3 +13,6 @@
 {{- end }}
 
 {{- define "integrations.dnsmasq.type.logs" }}false{{- end }}
+
+{{- define "secrets.list.integration.dnsmasq" }}
+{{- end }}
