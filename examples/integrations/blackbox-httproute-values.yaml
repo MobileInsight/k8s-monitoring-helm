@@ -1,0 +1,186 @@
+# Example configuration for Blackbox exporter with HTTPRoute discovery
+# This demonstrates automatic endpoint discovery from Gateway API HTTPRoute resources
+
+# Feature integrations configuration
+integrations:
+  blackbox:
+    instances:
+      # Example 1: Basic HTTPRoute discovery for all namespaces
+      - name: httproute-autodiscovery
+        exporter:
+          config: |
+            modules:
+              http_2xx:
+                prober: http
+                timeout: 5s
+                http:
+                  valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                  valid_status_codes: []
+                  method: GET
+                  follow_redirects: true
+              http_post_2xx:
+                prober: http
+                timeout: 5s
+                http:
+                  method: POST
+                  headers:
+                    Content-Type: application/json
+                  body: '{"probe": "health"}'
+        discovery:
+          enabled: true
+          namespaces: []  # Monitor all namespaces
+          protocol: https
+          path: /health
+          module: http_2xx
+
+      # Example 2: Production-only monitoring with filtering
+      - name: production-apis
+        exporter:
+          config: |
+            modules:
+              http_2xx:
+                prober: http
+                timeout: 10s
+                http:
+                  valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                  valid_status_codes: [200, 204]
+                  method: GET
+                  fail_if_body_not_matches_regexp:
+                    - "healthy"
+        discovery:
+          enabled: true
+          namespaces:
+            - production
+            - prod-apps
+          labelSelectors:
+            # Only monitor HTTPRoutes with these labels
+            environment: production
+            monitoring: enabled
+          protocol: https
+          path: /api/health
+          module: http_2xx
+          extraRelabelRules:
+            # Add SLO class from HTTPRoute label
+            - source_labels: ["__meta_kubernetes_httproute_labels_slo_class"]
+              target_label: "slo_class"
+            # Skip routes marked as no-probe
+            - source_labels: ["__meta_kubernetes_httproute_annotations_monitoring_probe"]
+              regex: "false"
+              action: drop
+
+      # Example 3: Multi-environment with static and discovered targets
+      - name: comprehensive-monitoring
+        exporter:
+          # Static targets for external/legacy endpoints
+          targets:
+            - https://legacy.example.com/status
+            - https://partner-api.external.com/health
+            - tcp://database.internal:5432
+          module: http_2xx
+          config: |
+            modules:
+              http_2xx:
+                prober: http
+                timeout: 5s
+                http:
+                  valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                  valid_status_codes: []
+                  method: GET
+              tcp_connect:
+                prober: tcp
+                timeout: 5s
+        discovery:
+          enabled: true
+          # Different namespaces for different environments
+          namespaces:
+            - development
+            - staging
+            - production
+          labelSelectors:
+            # Can use "in" operator for multiple values
+            gateway: ["public", "private"]
+          protocol: https
+          path: ""  # No additional path
+          module: http_2xx
+          extraRelabelRules:
+            # Add environment based on namespace
+            - source_labels: ["namespace"]
+              regex: "(development|staging|production)"
+              target_label: "environment"
+            # Create monitoring tier based on HTTPRoute priority
+            - source_labels: ["__meta_kubernetes_httproute_annotations_priority"]
+              regex: "high"
+              target_label: "monitoring_tier"
+              replacement: "critical"
+            - source_labels: ["__meta_kubernetes_httproute_annotations_priority"]
+              regex: "medium"
+              target_label: "monitoring_tier"
+              replacement: "standard"
+            - source_labels: ["__meta_kubernetes_httproute_annotations_priority"]
+              regex: "low"
+              target_label: "monitoring_tier"
+              replacement: "best-effort"
+
+      # Example 4: Custom probing for different route types
+      - name: api-gateway-monitor
+        exporter:
+          config: |
+            modules:
+              http_2xx:
+                prober: http
+                timeout: 5s
+                http:
+                  method: GET
+              graphql_probe:
+                prober: http
+                timeout: 10s
+                http:
+                  method: POST
+                  headers:
+                    Content-Type: application/json
+                  body: '{"query": "{ __typename }"}'
+                  valid_status_codes: [200]
+              grpc_health:
+                prober: grpc
+                timeout: 5s
+                grpc:
+                  tls: true
+                  tls_config:
+                    insecure_skip_verify: false
+        discovery:
+          enabled: true
+          namespaces:
+            - api-services
+          labelSelectors:
+            app.kubernetes.io/component: api-gateway
+          protocol: https
+          path: ""
+          module: http_2xx
+          extraRelabelRules:
+            # Use different modules based on service type annotation
+            - source_labels: ["__meta_kubernetes_httproute_annotations_service_type"]
+              regex: "graphql"
+              target_label: "__param_module"
+              replacement: "graphql_probe"
+            - source_labels: ["__meta_kubernetes_httproute_annotations_service_type"]
+              regex: "grpc"
+              target_label: "__param_module"
+              replacement: "grpc_health"
+            # Modify path for GraphQL endpoints
+            - source_labels: ["__param_target", "__meta_kubernetes_httproute_annotations_service_type"]
+              regex: "(.*);graphql"
+              target_label: "__param_target"
+              replacement: "${1}/graphql"
+
+# Metrics configuration
+metrics:
+  tuning:
+    # Keep only essential blackbox metrics
+    includeMetrics:
+      - probe_success
+      - probe_duration_seconds
+      - probe_http_status_code
+      - probe_http_duration_seconds
+      - probe_dns_lookup_time_seconds
+      - probe_http_ssl
+      - probe_ssl_earliest_cert_expiry

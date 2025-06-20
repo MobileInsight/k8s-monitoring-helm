@@ -1,0 +1,17 @@
+{{- define "integrations.redis.validate" }}
+  {{- $integration := .integration }}
+  {{- $type := .type }}
+  {{- if eq $type "metrics" }}
+    {{- $defaultValues := "integrations/redis-values.yaml" | .Files.Get | fromYaml }}
+    {{- range $idx, $instance := $integration.instances }}
+      {{- $mergedValues := mergeOverwrite $defaultValues $instance }}
+      {{- if empty $mergedValues.name }}
+        {{- fail (printf "redis instance %d is missing the 'name' field" $idx) }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- define "secrets.list.integration.redis" }}
+- exporter.auth.password
+{{- end }}

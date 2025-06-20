@@ -1,0 +1,112 @@
+# yamllint disable rule:document-start rule:line-length rule:trailing-spaces
+suite: Test Blackbox Integration - HTTPRoute Discovery
+templates:
+  - configmap.yaml
+tests:
+  - it: should create blackbox config with HTTPRoute discovery enabled
+    set:
+      deployAsConfigMap: true
+      blackbox:
+        instances:
+          - name: httproute-prober
+            exporter:
+              targets: []  # No static targets
+              module: http_2xx
+            discovery:
+              enabled: true
+              namespaces:
+                - production
+                - staging
+              labelSelectors:
+                gateway: external
+              protocol: https
+              path: /health
+              module: http_2xx
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]
+
+  - it: should create blackbox config with both static targets and HTTPRoute discovery
+    set:
+      deployAsConfigMap: true
+      blackbox:
+        instances:
+          - name: combined-prober
+            exporter:
+              targets:
+                - https://static-target.example.com
+                - https://another-static.example.com
+              module: http_2xx
+              config: |
+                modules:
+                  http_2xx:
+                    prober: http
+                    timeout: 5s
+                    http:
+                      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                      valid_status_codes: [200, 204, 301, 302]
+                      method: GET
+                  http_post_2xx:
+                    prober: http
+                    timeout: 5s
+                    http:
+                      method: POST
+                      headers:
+                        Content-Type: application/json
+                      body: '{"check": "health"}'
+            discovery:
+              enabled: true
+              namespaces: []  # All namespaces
+              labelSelectors:
+                app.kubernetes.io/managed-by: gateway-controller
+              protocol: https
+              path: ""
+              module: http_2xx
+              extraRelabelRules:
+                - source_labels: ["__meta_kubernetes_httproute_labels_monitoring_enabled"]
+                  regex: "false"
+                  action: drop
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]
+
+  - it: should handle HTTPRoute discovery with custom relabel rules
+    set:
+      deployAsConfigMap: true
+      blackbox:
+        instances:
+          - name: custom-httproute-prober
+            exporter:
+              targets: []
+              module: http_2xx
+            discovery:
+              enabled: true
+              namespaces:
+                - production
+              protocol: https
+              path: /api/health
+              module: http_post_2xx
+              extraRelabelRules:
+                # Add environment label from namespace annotation
+                - source_labels: ["__meta_kubernetes_namespace_labels_environment"]
+                  target_label: "environment"
+                # Create custom target with subdomain
+                - source_labels: ["__tmp_hostnames", "__meta_kubernetes_httproute_namespace"]
+                  regex: "([^,\\s]+);(.+)"
+                  target_label: "__param_target"
+                  replacement: "https://${2}.${1}/api/health"
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]

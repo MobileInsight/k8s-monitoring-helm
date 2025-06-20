@@ -1,0 +1,84 @@
+# yamllint disable rule:document-start rule:line-length rule:trailing-spaces
+suite: Test Blackbox Integration - Metrics
+templates:
+  - configmap.yaml
+tests:
+  - it: should create the Blackbox config with default module
+    set:
+      deployAsConfigMap: true
+      blackbox:
+        instances:
+          - name: website-prober
+            exporter:
+              targets:
+                - https://example.com
+                - https://grafana.com
+              module: http_2xx
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]
+
+  - it: should create the Blackbox config with custom config
+    set:
+      deployAsConfigMap: true
+      blackbox:
+        instances:
+          - name: custom-prober
+            exporter:
+              config: |
+                modules:
+                  http_2xx:
+                    prober: http
+                    timeout: 5s
+                    http:
+                      valid_http_versions: ["HTTP/1.1", "HTTP/2.0"]
+                      valid_status_codes: []
+                      method: GET
+                  tcp_connect:
+                    prober: tcp
+                    timeout: 5s
+              targets:
+                - https://example.com
+                - tcp://database.svc:5432
+              module: http_2xx
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]
+
+  - it: works with multiple Blackbox instances
+    set:
+      deployAsConfigMap: true
+      blackbox:
+        instances:
+          - name: http-prober
+            exporter:
+              targets:
+                - https://api.example.com
+                - https://app.example.com
+              module: http_2xx
+          - name: tcp-prober
+            exporter:
+              config: |
+                modules:
+                  tcp_connect:
+                    prober: tcp
+                    timeout: 10s
+              targets:
+                - tcp://db1.svc:3306
+                - tcp://db2.svc:5432
+              module: tcp_connect
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]

@@ -1,0 +1,99 @@
+# yamllint disable rule:document-start rule:line-length rule:trailing-spaces
+suite: Test PostgreSQL Integration - Metrics
+templates:
+  - configmap.yaml
+  - exporter-secrets.yaml
+tests:
+  - it: should create the PostgreSQL config
+    set:
+      deployAsConfigMap: true
+      postgres:
+        instances:
+          - name: my-postgres
+            exporter:
+              address: my-postgres.postgresql.svc:5432
+              auth:
+                username: postgres
+                password: postgres-password
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]
+
+      - template: exporter-secrets.yaml
+        documentIndex: 0
+        containsDocument:
+          apiVersion: v1
+          kind: Secret
+          name: my-postgres-release-name-feature-integrations
+          namespace: NAMESPACE
+      - template: exporter-secrets.yaml
+        equal:
+          path: stringData.username
+          value: postgres
+      - template: exporter-secrets.yaml
+        equal:
+          path: stringData.password
+          value: postgres-password
+
+  - it: works with multiple PostgreSQL Instances
+    set:
+      deployAsConfigMap: true
+      postgres:
+        instances:
+          - name: test-pg
+            exporter:
+              address: postgres.test.svc:5432
+          - name: staging-pg
+            exporter:
+              address: postgres.staging.svc:5432
+              auth:
+                username: staging-user
+                password: staging-pass
+          - name: prod-pg
+            exporter:
+              address: postgres.prod.svc:5432
+              auth:
+                username: prod-user
+                password: prod-pass
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]
+
+      - template: exporter-secrets.yaml
+        hasDocuments:
+          count: 2  # Two secrets should be created (staging and prod)
+
+  - it: works when referencing an external PostgreSQL Secret
+    set:
+      deployAsConfigMap: true
+      postgres:
+        instances:
+          - name: test-postgres
+            exporter:
+              address: test-postgres.postgresql.svc:5432
+              auth:
+                usernameFrom: sys.env(PG_USER)
+                passwordKey: postgres-password
+            secret:
+              create: false
+              name: test-postgres-secret
+              namespace: postgresql
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]
+
+      - template: exporter-secrets.yaml
+        hasDocuments:
+          count: 0  # No secret should be created

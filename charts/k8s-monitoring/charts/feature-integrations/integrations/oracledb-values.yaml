@@ -1,0 +1,77 @@
+---
+# -- Name for this Oracle Database instance.
+# @section -- General Settings
+name: ""
+
+# -- The value of the job label for scraped metrics
+# @section -- General Settings
+jobLabel: integration/oracledb
+
+# Settings for metrics collection
+metrics:
+  # -- Whether to enable metrics collection from Oracle Database.
+  # @section -- Metrics Settings
+  enabled: true
+
+  # -- How frequently to scrape metrics.
+  # @default -- `60s`
+  # @section -- Scrape Settings
+  scrapeInterval:
+
+  # -- Sets the max_cache_size for prometheus.relabel component.
+  # This should be at least 2x-5x your largest scrape target or samples appended rate.
+  # ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments))
+  # Overrides global.maxCacheSize
+  # @default -- `100000`
+  # @section -- Metric Processing Settings
+  maxCacheSize:
+
+  # Adjustments to the scraped metrics to filter the amount of data sent to storage.
+  tuning:
+    # -- Metrics to keep. Can use regular expressions.
+    # @section -- Metric Processing Settings
+    includeMetrics: []
+    # -- Metrics to drop. Can use regular expressions.
+    # @section -- Metric Processing Settings
+    excludeMetrics: []
+
+# Settings for the Alloy embedded Oracle Database Exporter
+exporter:
+  # -- The address of the Oracle Database server.
+  # @section -- Exporter Settings
+  address: ""
+  
+  auth:
+    # -- The username for authentication.
+    # @section -- Exporter Settings
+    username: ""
+    # -- The key for storing the username in the secret.
+    # @section -- Exporter Settings
+    usernameKey: "username"
+    # -- Raw config for accessing the username.
+    # @section -- Exporter Settings
+    usernameFrom: ""
+    # -- The password for authentication.
+    # @section -- Exporter Settings
+    password: ""
+    # -- The key for storing the password in the secret.
+    # @section -- Exporter Settings
+    passwordKey: "password"
+    # -- Raw config for accessing the password.
+    # @section -- Exporter Settings
+    passwordFrom: ""
+
+secret:
+  # -- (bool) Whether to create a secret to store credentials.
+  # @default -- `true`
+  # @section -- Secret
+  create:
+  # -- If true, skip secret creation and embed the credentials directly into the configuration.
+  # @section -- Secret
+  embed: false
+  # -- The name of the secret to create.
+  # @section -- Secret
+  name: ""
+  # -- The namespace for the secret.
+  # @section -- Secret
+  namespace: ""

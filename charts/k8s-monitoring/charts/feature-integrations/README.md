@@ -15,8 +15,29 @@ The current integrations that are available from this feature are:
 | Integration | Description | Data Types | Docs |
 | --- | --- | --- | --- |
 | [Grafana Alloy](https://grafana.com/docs/alloy) | Telemetry data collector | Metrics | [Alloy doc](./docs/integrations/alloy.md) |
+| [Apache](https://httpd.apache.org/) | Apache HTTP Server | Metrics | [Apache doc](./docs/integrations/apache.md) |
+| [Blackbox](https://github.com/prometheus/blackbox_exporter) | Endpoint prober (HTTP, TCP, DNS, etc.) | Metrics | [Blackbox doc](./docs/integrations/blackbox.md) |
+| [cAdvisor](https://github.com/google/cadvisor) | Container resource usage and performance | Metrics | [cAdvisor doc](./docs/integrations/cadvisor.md) |
 | [cert-manager](https://cert-manager.io/) | x.509 certificate management for Kubernetes | Metrics | [Cert manager doc](./docs/integrations/cert-manager.md) |
+| [Consul](https://www.consul.io/) | Service mesh and service discovery | Metrics | [Consul doc](./docs/integrations/consul.md) |
+| [dnsmasq](https://thekelleys.org.uk/dnsmasq/doc.html) | DNS and DHCP server | Metrics | [dnsmasq doc](./docs/integrations/dnsmasq.md) |
+| [Elasticsearch](https://www.elastic.co/elasticsearch/) | Search and analytics engine | Metrics | [Elasticsearch doc](./docs/integrations/elasticsearch.md) |
 | [etcd](https://etcd.io/) | Distributed key-value store | Metrics | [etcd doc](./docs/integrations/etcd.md) |
+| [Grafana](https://grafana.com/) | Observability platform | Metrics, Logs | [Grafana doc](./docs/integrations/grafana.md) |
+| [Kafka](https://kafka.apache.org/) | Distributed event streaming platform | Metrics | [Kafka doc](./docs/integrations/kafka.md) |
+| [Loki](https://grafana.com/oss/loki/) | Log aggregation system | Metrics, Logs | [Loki doc](./docs/integrations/loki.md) |
+| [Memcached](https://memcached.org/) | Distributed memory caching system | Metrics | [Memcached doc](./docs/integrations/memcached.md) |
+| [Mimir](https://grafana.com/oss/mimir/) | Scalable metrics backend | Metrics, Logs | [Mimir doc](./docs/integrations/mimir.md) |
+| [MongoDB](https://www.mongodb.com/) | NoSQL database | Metrics | [MongoDB doc](./docs/integrations/mongodb.md) |
+| [Microsoft SQL Server](https://www.microsoft.com/sql-server/) | Relational database | Metrics | [MSSQL doc](./docs/integrations/mssql.md) |
+| [MySQL](https://www.mysql.com/) | Relational database | Metrics, Logs | [MySQL doc](./docs/integrations/mysql.md) |
+| [Oracle Database](https://www.oracle.com/database/) | Relational database | Metrics | [OracleDB doc](./docs/integrations/oracledb.md) |
+| [PostgreSQL](https://www.postgresql.org/) | Relational database | Metrics | [PostgreSQL doc](./docs/integrations/postgres.md) |
+| [Redis](https://redis.io/) | In-memory data structure store | Metrics | [Redis doc](./docs/integrations/redis.md) |
+| [SNMP](https://en.wikipedia.org/wiki/Simple_Network_Management_Protocol) | Network device monitoring | Metrics | [SNMP doc](./docs/integrations/snmp.md) |
+| [Squid](http://www.squid-cache.org/) | Caching proxy server | Metrics | [Squid doc](./docs/integrations/squid.md) |
+| [StatsD](https://github.com/statsd/statsd) | Metrics aggregation daemon | Metrics | [StatsD doc](./docs/integrations/statsd.md) |
+| [Tempo](https://grafana.com/oss/tempo/) | Distributed tracing backend | Metrics, Logs | [Tempo doc](./docs/integrations/tempo.md) |
 
 ## Usage
 
@@ -129,6 +150,102 @@ Be sure perform actual integration testing in a live environment in the main [k8
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | mysql | object | `{"instances":[]}` | Scrape metrics/logs from MySQL |
+
+### Integration: Apache
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| apache | object | `{"instances":[]}` | Scrape metrics from Apache HTTP Server |
+
+### Integration: Blackbox
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| blackbox | object | `{"instances":[]}` | Probe endpoints with Blackbox exporter |
+
+### Integration: cAdvisor
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| cadvisor | object | `{"instances":[]}` | Scrape container metrics from cAdvisor |
+
+### Integration: Consul
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| consul | object | `{"instances":[]}` | Scrape metrics from HashiCorp Consul |
+
+### Integration: dnsmasq
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| dnsmasq | object | `{"instances":[]}` | Scrape metrics from dnsmasq |
+
+### Integration: Elasticsearch
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| elasticsearch | object | `{"instances":[]}` | Scrape metrics from Elasticsearch |
+
+### Integration: Kafka
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| kafka | object | `{"instances":[]}` | Scrape metrics from Apache Kafka |
+
+### Integration: Memcached
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| memcached | object | `{"instances":[]}` | Scrape metrics from Memcached |
+
+### Integration: MongoDB
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| mongodb | object | `{"instances":[]}` | Scrape metrics from MongoDB |
+
+### Integration: MSSQL
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| mssql | object | `{"instances":[]}` | Scrape metrics from Microsoft SQL Server |
+
+### Integration: OracleDB
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| oracledb | object | `{"instances":[]}` | Scrape metrics from Oracle Database |
+
+### Integration: PostgreSQL
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| postgres | object | `{"instances":[]}` | Scrape metrics from PostgreSQL |
+
+### Integration: Redis
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| redis | object | `{"instances":[]}` | Scrape metrics from Redis |
+
+### Integration: SNMP
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| snmp | object | `{"instances":[]}` | Scrape metrics from SNMP devices |
+
+### Integration: Squid
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| squid | object | `{"instances":[]}` | Scrape metrics from Squid proxy |
+
+### Integration: StatsD
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| statsd | object | `{"instances":[]}` | Collect StatsD metrics |
 
 ### Node Labels
 

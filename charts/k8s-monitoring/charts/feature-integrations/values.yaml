@@ -90,5 +90,85 @@ tempo:
 mysql:
   instances: []
 
+# -- Scrape metrics from Apache HTTP Server
+# @section -- Integration: Apache
+apache:
+  instances: []
+
+# -- Probe endpoints with Blackbox exporter
+# @section -- Integration: Blackbox
+blackbox:
+  instances: []
+
+# -- Scrape container metrics from cAdvisor
+# @section -- Integration: cAdvisor
+cadvisor:
+  instances: []
+
+# -- Scrape metrics from HashiCorp Consul
+# @section -- Integration: Consul
+consul:
+  instances: []
+
+# -- Scrape metrics from dnsmasq
+# @section -- Integration: dnsmasq
+dnsmasq:
+  instances: []
+
+# -- Scrape metrics from Elasticsearch
+# @section -- Integration: Elasticsearch
+elasticsearch:
+  instances: []
+
+# -- Scrape metrics from Apache Kafka
+# @section -- Integration: Kafka
+kafka:
+  instances: []
+
+# -- Scrape metrics from Memcached
+# @section -- Integration: Memcached
+memcached:
+  instances: []
+
+# -- Scrape metrics from MongoDB
+# @section -- Integration: MongoDB
+mongodb:
+  instances: []
+
+# -- Scrape metrics from Microsoft SQL Server
+# @section -- Integration: MSSQL
+mssql:
+  instances: []
+
+# -- Scrape metrics from Oracle Database
+# @section -- Integration: OracleDB
+oracledb:
+  instances: []
+
+# -- Scrape metrics from PostgreSQL
+# @section -- Integration: PostgreSQL
+postgres:
+  instances: []
+
+# -- Scrape metrics from Redis
+# @section -- Integration: Redis
+redis:
+  instances: []
+
+# -- Scrape metrics from SNMP devices
+# @section -- Integration: SNMP
+snmp:
+  instances: []
+
+# -- Scrape metrics from Squid proxy
+# @section -- Integration: Squid
+squid:
+  instances: []
+
+# -- Collect StatsD metrics
+# @section -- Integration: StatsD
+statsd:
+  instances: []
+
 # @ignore
 deployAsConfigMap: false
