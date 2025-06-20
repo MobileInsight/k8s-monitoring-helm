@@ -16,3 +16,5 @@
 - exporter.auth.username
 - exporter.auth.password
 {{- end }}
+
+{{- define "integrations.kafka.type.logs" }}false{{- end }}

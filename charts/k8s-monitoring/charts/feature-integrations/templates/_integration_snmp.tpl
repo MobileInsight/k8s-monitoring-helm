@@ -11,3 +11,5 @@
     {{- end }}
   {{- end }}
 {{- end }}
+
+{{- define "integrations.snmp.type.logs" }}false{{- end }}

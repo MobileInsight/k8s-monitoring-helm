@@ -11,3 +11,5 @@
     {{- end }}
   {{- end }}
 {{- end }}
+
+{{- define "integrations.statsd.type.logs" }}false{{- end }}

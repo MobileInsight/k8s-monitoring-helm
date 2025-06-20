@@ -11,3 +11,5 @@
     {{- end }}
   {{- end }}
 {{- end }}
+
+{{- define "integrations.consul.type.logs" }}false{{- end }}

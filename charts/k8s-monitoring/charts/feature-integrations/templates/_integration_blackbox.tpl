@@ -11,3 +11,5 @@
     {{- end }}
   {{- end }}
 {{- end }}
+
+{{- define "integrations.blackbox.type.logs" }}false{{- end }}

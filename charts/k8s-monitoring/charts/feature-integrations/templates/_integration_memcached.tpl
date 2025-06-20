@@ -11,3 +11,5 @@
     {{- end }}
   {{- end }}
 {{- end }}
+
+{{- define "integrations.memcached.type.logs" }}false{{- end }}

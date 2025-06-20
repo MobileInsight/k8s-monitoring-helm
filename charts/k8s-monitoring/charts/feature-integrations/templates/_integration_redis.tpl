@@ -15,3 +15,5 @@
 {{- define "secrets.list.integration.redis" }}
 - exporter.auth.password
 {{- end }}
+
+{{- define "integrations.redis.type.logs" }}false{{- end }}
