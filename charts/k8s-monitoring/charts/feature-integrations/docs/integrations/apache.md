@@ -1,6 +1,4 @@
-# Apache Integration
-
-This integration uses the `prometheus.exporter.apache` component to collect metrics from Apache HTTP Server instances.
+# apache
 
 ## Values
 
@@ -15,19 +13,19 @@ This integration uses the `prometheus.exporter.apache` component to collect metr
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | jobLabel | string | `"integration/apache"` | The value of the job label for scraped metrics |
-| name | string | `""` | Name for this Apache instance. |
+| name | string | `""` | Name for this Apache HTTP Server instance. |
 
 ### Metrics Settings
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| metrics.enabled | bool | `true` | Whether to enable metrics collection from Apache. |
+| metrics.enabled | bool | `true` | Whether to enable metrics collection from Apache HTTP Server. |
 
 ### Metric Processing Settings
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| metrics.maxCacheSize | string | `100000` | Sets the max_cache_size for prometheus.relabel component. Overrides global.maxCacheSize |
+| metrics.maxCacheSize | string | `100000` | Sets the max_cache_size for prometheus.relabel component. This should be at least 2x-5x your largest scrape target or samples appended rate. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments)) Overrides global.maxCacheSize |
 | metrics.tuning.excludeMetrics | list | `[]` | Metrics to drop. Can use regular expressions. |
 | metrics.tuning.includeMetrics | list | `[]` | Metrics to keep. Can use regular expressions. |
 
@@ -36,34 +34,3 @@ This integration uses the `prometheus.exporter.apache` component to collect metr
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | metrics.scrapeInterval | string | `60s` | How frequently to scrape metrics. |
-
-## Configuration
-
-To enable Apache monitoring, ensure that `mod_status` is enabled and accessible:
-
-```apache
-<Location "/server-status">
-    SetHandler server-status
-    Require host localhost
-</Location>
-```
-
-## Enabling
-
-```yaml
-integrations:
-  apache:
-    instances:
-      - name: webserver
-        exporter:
-          scrapeURI: "http://apache.default.svc.cluster.local/server-status?auto"
-```
-
-## Available Metrics
-
-- `apache_accesses_total` - Total number of accesses
-- `apache_sent_kilobytes_total` - Total kilobytes sent
-- `apache_uptime_seconds_total` - Current uptime in seconds
-- `apache_workers` - Apache worker statuses
-- `apache_scoreboard` - Apache scoreboard statuses
-- `apache_connections` - Apache connection statuses

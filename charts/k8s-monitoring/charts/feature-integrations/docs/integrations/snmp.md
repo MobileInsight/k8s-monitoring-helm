@@ -1,6 +1,4 @@
-# SNMP Integration
-
-This integration uses the `prometheus.exporter.snmp` component to collect metrics from SNMP-enabled devices.
+# snmp
 
 ## Values
 
@@ -8,49 +6,32 @@ This integration uses the `prometheus.exporter.snmp` component to collect metric
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| exporter.config | string | See values | SNMP configuration with auth and modules. |
-| exporter.targets | list | `[]` | List of SNMP targets to monitor. |
+| exporter.config | string | `"# SNMP configuration\n"` | SNMP configuration file. |
+| exporter.targets | list | `[]` | Target devices to monitor. |
 
 ### General Settings
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | jobLabel | string | `"integration/snmp"` | The value of the job label for scraped metrics |
-| name | string | `""` | Name for this SNMP instance. |
+| name | string | `""` | Name for this SNMP devices instance. |
 
 ### Metrics Settings
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| metrics.enabled | bool | `true` | Whether to enable metrics collection. |
+| metrics.enabled | bool | `true` | Whether to enable metrics collection from SNMP devices. |
+
+### Metric Processing Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| metrics.maxCacheSize | string | `100000` | Sets the max_cache_size for prometheus.relabel component. This should be at least 2x-5x your largest scrape target or samples appended rate. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments)) Overrides global.maxCacheSize |
+| metrics.tuning.excludeMetrics | list | `[]` | Metrics to drop. Can use regular expressions. |
+| metrics.tuning.includeMetrics | list | `[]` | Metrics to keep. Can use regular expressions. |
+
+### Scrape Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
 | metrics.scrapeInterval | string | `60s` | How frequently to scrape metrics. |
-
-## Enabling
-
-```yaml
-integrations:
-  snmp:
-    instances:
-      - name: network-devices
-        exporter:
-          targets:
-            - 192.168.1.1  # Switch
-            - 192.168.1.2  # Router
-          config: |
-            auths:
-              public:
-                community: public
-                security_level: noAuthNoPriv
-            modules:
-              if_mib:
-                walk:
-                  - 1.3.6.1.2.1.2
-```
-
-## Available Metrics
-
-- `snmp_scrape_duration_seconds` - Time taken to collect metrics
-- `ifHCInOctets` - Interface input byte counters
-- `ifHCOutOctets` - Interface output byte counters
-- `sysUpTime` - System uptime
-- Custom OID metrics based on configuration

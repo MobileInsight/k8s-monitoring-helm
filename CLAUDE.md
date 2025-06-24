@@ -42,11 +42,30 @@ make test
 # Run linters
 make lint
 
-# Install linting tools
+# Specific linters
+make lint-alloy      # Lint Alloy configuration files
+make lint-shell      # Lint shell scripts
+make lint-markdown   # Lint markdown files
+make lint-terraform  # Lint terraform files
+make lint-yaml       # Lint YAML files
+
+# Install linting tools (macOS only)
 make setup
+
+# Install Node.js dependencies
+yarn install
 
 # Generate integration schemas (after adding new integrations)
 make -C charts/k8s-monitoring/charts/feature-integrations build
+
+# Run a single test file
+helm unittest -f tests/specific_test.yaml charts/k8s-monitoring
+
+# Debug Helm template generation
+helm template k8s-monitoring charts/k8s-monitoring --debug
+
+# Validate chart with dry-run
+helm install k8s-monitoring charts/k8s-monitoring --dry-run --debug
 ```
 
 ## Chart Architecture (k8s-monitoring v2.x)
@@ -75,7 +94,7 @@ Multiple Alloy instances for different telemetry types:
 
 ## Adding New Integrations
 
-The feature-integrations chart now supports all Prometheus exporters. To add a new integration:
+The feature-integrations chart supports all Prometheus exporters. To add a new integration:
 
 1. **Create values file**: `integrations/<name>-values.yaml`
 2. **Create templates**:
@@ -143,7 +162,7 @@ integrations:
 
 1. **Unit Tests**: Helm template validation
    - Located in `tests/` directories
-   - Run with `make test`
+   - Run with `make test` or `helm unittest`
    - Use snapshots for complex output validation
 
 2. **Integration Tests**: Full deployment scenarios
@@ -207,3 +226,10 @@ Multiple patterns supported:
 2. **Missing metrics**: Check service discovery labels and network policies
 3. **Authentication errors**: Verify secret references and permissions
 4. **Performance impact**: Adjust scrape intervals and enable sampling
+
+## Development Workflow Tips
+
+1. **Before committing**: Run `make lint` and `make test` to catch issues early
+2. **Schema changes**: After modifying values structures, run `make build` to regenerate schemas
+3. **Integration development**: Test with minimal configurations first, then add complexity
+4. **Error messages**: Include specific field paths and example configurations in validation errors

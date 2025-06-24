@@ -1,0 +1,114 @@
+suite: DaemonSet Metrics Configuration
+templates:
+  - templates/alloy-config.yaml
+
+release:
+  name: test
+  namespace: monitoring
+
+tests:
+  - it: should disable clustering when alloy-metrics is configured as daemonset
+    set:
+      destinations:
+        - name: prometheus
+          type: prometheus
+          url: http://prometheus:9090/api/v1/write
+      clusterMetrics:
+        enabled: true
+        kubelet:
+          enabled: true
+      alloy-metrics:
+        enabled: true
+        controller:
+          type: daemonset
+    asserts:
+      - matchRegex:
+          path: data["config.alloy"]
+          pattern: |
+            clustering \{
+              enabled = false
+          
+  - it: should enable clustering when alloy-metrics is configured as statefulset
+    set:
+      destinations:
+        - name: prometheus
+          type: prometheus
+          url: http://prometheus:9090/api/v1/write
+      clusterMetrics:
+        enabled: true
+        kubelet:
+          enabled: true
+      alloy-metrics:
+        enabled: true
+        controller:
+          type: statefulset
+    asserts:
+      - matchRegex:
+          path: data["config.alloy"]
+          pattern: |
+            clustering \{
+              enabled = true
+
+  - it: should add node filtering to discovery jobs when using daemonset
+    set:
+      destinations:
+        - name: prometheus
+          type: prometheus
+          url: http://prometheus:9090/api/v1/write
+      clusterMetrics:
+        enabled: true
+        kubelet:
+          enabled: true
+      alloy-metrics:
+        enabled: true
+        controller:
+          type: daemonset
+    asserts:
+      - matchRegex:
+          path: data["config.alloy"]
+          pattern: |
+            discovery.kubernetes "nodes" \{
+              role = "node"
+              selectors \{
+                role = "node"
+                field = "spec.nodeName=" \+ sys\.env\("HOSTNAME"\)
+
+  - it: should not add node filtering when using statefulset
+    set:
+      destinations:
+        - name: prometheus
+          type: prometheus
+          url: http://prometheus:9090/api/v1/write
+      clusterMetrics:
+        enabled: true
+        kubelet:
+          enabled: true
+      alloy-metrics:
+        enabled: true
+        controller:
+          type: statefulset
+    asserts:
+      - notMatchRegex:
+          path: data["config.alloy"]
+          pattern: spec\.nodeName=
+
+  - it: should configure integrations with node filtering in daemonset mode
+    set:
+      destinations:
+        - name: prometheus
+          type: prometheus
+          url: http://prometheus:9090/api/v1/write
+      integrations:
+        alloy:
+          instances:
+            - name: alloy-metrics
+              labelSelectors:
+                app.kubernetes.io/name: alloy
+      alloy-metrics:
+        enabled: true
+        controller:
+          type: daemonset
+    asserts:
+      - matchRegex:
+          path: data["config.alloy"]
+          pattern: field = string\.join\(concat\(coalesce\(argument\.field_selectors\.value, \[\]\), \["spec\.nodeName=" \+ sys\.env\("HOSTNAME"\)\]\), ","\)

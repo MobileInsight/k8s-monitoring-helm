@@ -45,6 +45,10 @@
 {{- end }}
 {{- end }}
 
+{{- define "alloy-metrics.isDaemonSet" }}
+{{- if and (index .Values "alloy-metrics").enabled (eq (index .Values "alloy-metrics").controller.type "daemonset") }}true{{- else }}false{{- end }}
+{{- end }}
+
 {{- define "label_list" }}
 {{- $labels := list }}
 {{- range $key, $value := . }}

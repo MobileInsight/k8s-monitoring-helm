@@ -1,0 +1,84 @@
+suite: DaemonSet Annotation Autodiscovery
+templates:
+  - templates/alloy-config.yaml
+  - templates/_helpers.tpl
+  - templates/_daemonset_helpers.tpl
+  - charts/feature-annotation-autodiscovery/templates/_module.alloy.tpl
+  - charts/feature-annotation-autodiscovery/templates/_pods.alloy.tpl
+
+release:
+  name: test
+  namespace: monitoring
+
+tests:
+  - it: should add node filtering to pod discovery when using daemonset
+    set:
+      destinations:
+        - name: prometheus
+          type: prometheus
+          url: http://prometheus:9090/api/v1/write
+      annotationAutodiscovery:
+        enabled: true
+        pods:
+          enabled: true
+      alloy-metrics:
+        enabled: true
+        controller:
+          type: daemonset
+    asserts:
+      - matchRegex:
+          path: data["config.alloy"]
+          pattern: |
+            discovery.kubernetes "pods" \{
+              role = "pod"
+              selectors \{
+                role = "pod"
+                field = "spec.nodeName=" \+ sys\.env\("HOSTNAME"\)
+
+  - it: should disable clustering for annotation autodiscovery in daemonset mode
+    set:
+      destinations:
+        - name: prometheus
+          type: prometheus
+          url: http://prometheus:9090/api/v1/write
+      annotationAutodiscovery:
+        enabled: true
+        pods:
+          enabled: true
+      alloy-metrics:
+        enabled: true
+        controller:
+          type: daemonset
+    asserts:
+      - matchRegex:
+          path: data["config.alloy"]
+          pattern: |
+            prometheus.scrape "annotation_autodiscovery_http" \{
+              .*
+              clustering \{
+                enabled = false
+
+  - it: should not add node filtering when label selectors are present
+    set:
+      destinations:
+        - name: prometheus
+          type: prometheus
+          url: http://prometheus:9090/api/v1/write
+      annotationAutodiscovery:
+        enabled: true
+        pods:
+          enabled: true
+          labelSelectors:
+            app: my-app
+      alloy-metrics:
+        enabled: true
+        controller:
+          type: daemonset
+    asserts:
+      - matchRegex:
+          path: data["config.alloy"]
+          pattern: |
+            selectors \{
+              role = "pod"
+              label = "app=my-app"
+              field = "spec.nodeName=" \+ sys\.env\("HOSTNAME"\)

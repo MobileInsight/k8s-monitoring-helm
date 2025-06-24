@@ -99,11 +99,47 @@ Be sure perform actual integration testing in a live environment in the main [k8
 |-----|------|---------|-------------|
 | alloy | object | `{"instances":[]}` | Scrape metrics/logs from Grafana Alloy |
 
+### Integration: Apache
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| apache | object | `{"instances":[]}` | Scrape metrics from Apache HTTP Server |
+
+### Integration: Blackbox
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| blackbox | object | `{"instances":[]}` | Probe endpoints with Blackbox exporter |
+
+### Integration: cAdvisor
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| cadvisor | object | `{"instances":[]}` | Scrape container metrics from cAdvisor |
+
 ### Integration: cert-manager
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | cert-manager | object | `{"instances":[]}` | Scrape metrics/logs from cert-manager |
+
+### Integration: Consul
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| consul | object | `{"instances":[]}` | Scrape metrics from HashiCorp Consul |
+
+### Integration: dnsmasq
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| dnsmasq | object | `{"instances":[]}` | Scrape metrics from dnsmasq |
+
+### Integration: Elasticsearch
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| elasticsearch | object | `{"instances":[]}` | Scrape metrics from Elasticsearch |
 
 ### Integration: etcd
 
@@ -133,71 +169,29 @@ Be sure perform actual integration testing in a live environment in the main [k8
 |-----|------|---------|-------------|
 | grafana | object | `{"instances":[]}` | Scrape metrics/logs from Grafana |
 
-### Integration: Loki
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| loki | object | `{"instances":[]}` | Scrape metrics/logs from Loki |
-
-### Integration: Mimir
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| mimir | object | `{"instances":[]}` | Scrape metrics/logs from Mimir |
-
-### Integration: MySQL
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| mysql | object | `{"instances":[]}` | Scrape metrics/logs from MySQL |
-
-### Integration: Apache
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| apache | object | `{"instances":[]}` | Scrape metrics from Apache HTTP Server |
-
-### Integration: Blackbox
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| blackbox | object | `{"instances":[]}` | Probe endpoints with Blackbox exporter |
-
-### Integration: cAdvisor
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| cadvisor | object | `{"instances":[]}` | Scrape container metrics from cAdvisor |
-
-### Integration: Consul
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| consul | object | `{"instances":[]}` | Scrape metrics from HashiCorp Consul |
-
-### Integration: dnsmasq
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| dnsmasq | object | `{"instances":[]}` | Scrape metrics from dnsmasq |
-
-### Integration: Elasticsearch
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| elasticsearch | object | `{"instances":[]}` | Scrape metrics from Elasticsearch |
-
 ### Integration: Kafka
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | kafka | object | `{"instances":[]}` | Scrape metrics from Apache Kafka |
 
+### Integration: Loki
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| loki | object | `{"instances":[]}` | Scrape metrics/logs from Loki |
+
 ### Integration: Memcached
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | memcached | object | `{"instances":[]}` | Scrape metrics from Memcached |
+
+### Integration: Mimir
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| mimir | object | `{"instances":[]}` | Scrape metrics/logs from Mimir |
 
 ### Integration: MongoDB
 
@@ -210,6 +204,24 @@ Be sure perform actual integration testing in a live environment in the main [k8
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | mssql | object | `{"instances":[]}` | Scrape metrics from Microsoft SQL Server |
+
+### Integration: MySQL
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| mysql | object | `{"instances":[]}` | Scrape metrics/logs from MySQL |
+
+### Node Labels
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| nodeLabels.availabilityZone | bool | `false` | Whether or not to add the availability\_zone label |
+| nodeLabels.instanceType | bool | `false` | Whether or not to add the instance\_type label |
+| nodeLabels.nodeArchitecture | bool | `false` | Whether or not to add the node architecture label |
+| nodeLabels.nodeOS | bool | `false` | Whether or not to add the os label |
+| nodeLabels.nodePool | bool | `false` | Whether or not to attach the nodepool label |
+| nodeLabels.nodeRole | bool | `false` | Whether or not to add the node\_role label |
+| nodeLabels.region | bool | `false` | Whether or not to add the region label |
 
 ### Integration: OracleDB
 
@@ -246,18 +258,6 @@ Be sure perform actual integration testing in a live environment in the main [k8
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | statsd | object | `{"instances":[]}` | Collect StatsD metrics |
-
-### Node Labels
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| nodeLabels.availabilityZone | bool | `false` | Whether or not to add the availability\_zone label |
-| nodeLabels.instanceType | bool | `false` | Whether or not to add the instance\_type label |
-| nodeLabels.nodeArchitecture | bool | `false` | Whether or not to add the node architecture label |
-| nodeLabels.nodeOS | bool | `false` | Whether or not to add the os label |
-| nodeLabels.nodePool | bool | `false` | Whether or not to attach the nodepool label |
-| nodeLabels.nodeRole | bool | `false` | Whether or not to add the node\_role label |
-| nodeLabels.region | bool | `false` | Whether or not to add the region label |
 
 ### Integration: Tempo
 

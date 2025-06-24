@@ -1,6 +1,4 @@
-# Squid Integration
-
-This integration uses the `prometheus.exporter.squid` component to collect metrics from Squid proxy servers.
+# squid
 
 ## Values
 
@@ -8,42 +6,33 @@ This integration uses the `prometheus.exporter.squid` component to collect metri
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| exporter.address | string | `"http://localhost:3128/squid-internal-mgr/counters"` | Squid server address. |
-| exporter.username | string | `""` | Squid manager username. |
+| exporter.address | string | `http://localhost:3128/squid-internal-mgr/counters` | Squid server address. |
 | exporter.password | string | `""` | Squid manager password. |
+| exporter.username | string | `""` | Squid manager username. |
 
 ### General Settings
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | jobLabel | string | `"integration/squid"` | The value of the job label for scraped metrics |
-| name | string | `""` | Name for this Squid instance. |
+| name | string | `""` | Name for this Squid proxy instance. |
 
 ### Metrics Settings
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| metrics.enabled | bool | `true` | Whether to enable metrics collection. |
+| metrics.enabled | bool | `true` | Whether to enable metrics collection from Squid proxy. |
+
+### Metric Processing Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| metrics.maxCacheSize | string | `100000` | Sets the max_cache_size for prometheus.relabel component. This should be at least 2x-5x your largest scrape target or samples appended rate. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments)) Overrides global.maxCacheSize |
+| metrics.tuning.excludeMetrics | list | `[]` | Metrics to drop. Can use regular expressions. |
+| metrics.tuning.includeMetrics | list | `[]` | Metrics to keep. Can use regular expressions. |
+
+### Scrape Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
 | metrics.scrapeInterval | string | `60s` | How frequently to scrape metrics. |
-
-## Enabling
-
-```yaml
-integrations:
-  squid:
-    instances:
-      - name: proxy-server
-        exporter:
-          address: "http://squid.proxy.svc.cluster.local:3128/squid-internal-mgr/counters"
-          username: manager
-          password: manager-password
-```
-
-## Available Metrics
-
-- `squid_up` - Whether Squid is up
-- `squid_client_http_requests_total` - Total number of HTTP requests
-- `squid_client_http_hits_total` - Total number of cache hits
-- `squid_client_http_errors_total` - Total number of HTTP errors
-- `squid_server_all_kbytes_in_total` - Total KB received from servers
-- `squid_server_all_kbytes_out_total` - Total KB sent to servers

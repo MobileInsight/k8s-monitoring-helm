@@ -1,6 +1,4 @@
-# StatsD Integration
-
-This integration uses the `prometheus.exporter.statsd` component to receive and aggregate StatsD metrics.
+# statsd
 
 ## Values
 
@@ -8,7 +6,7 @@ This integration uses the `prometheus.exporter.statsd` component to receive and 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| exporter.listenAddress | string | `"0.0.0.0:9125"` | The address to listen on for StatsD metrics. |
+| exporter.listenAddress | string | `0.0.0.0:9125` | The address to listen on for StatsD metrics. |
 | exporter.mappingConfig | string | `""` | Mapping configuration for StatsD metrics. |
 
 ### General Settings
@@ -22,30 +20,18 @@ This integration uses the `prometheus.exporter.statsd` component to receive and 
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| metrics.enabled | bool | `true` | Whether to enable metrics collection. |
+| metrics.enabled | bool | `true` | Whether to enable metrics collection from StatsD. |
+
+### Metric Processing Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| metrics.maxCacheSize | string | `100000` | Sets the max_cache_size for prometheus.relabel component. This should be at least 2x-5x your largest scrape target or samples appended rate. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments)) Overrides global.maxCacheSize |
+| metrics.tuning.excludeMetrics | list | `[]` | Metrics to drop. Can use regular expressions. |
+| metrics.tuning.includeMetrics | list | `[]` | Metrics to keep. Can use regular expressions. |
+
+### Scrape Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
 | metrics.scrapeInterval | string | `60s` | How frequently to scrape metrics. |
-
-## Enabling
-
-```yaml
-integrations:
-  statsd:
-    instances:
-      - name: metrics-aggregator
-        exporter:
-          listenAddress: "0.0.0.0:9125"
-          mappingConfig: |
-            mappings:
-            - match: "api.*.request.count"
-              name: "api_requests_total"
-              labels:
-                endpoint: "$1"
-```
-
-## Available Metrics
-
-Metrics depend on what applications send to StatsD. Common patterns:
-- Counters: `*_total`
-- Gauges: Current values
-- Timers: `*_seconds` with histogram buckets
-- Histograms: Distribution metrics

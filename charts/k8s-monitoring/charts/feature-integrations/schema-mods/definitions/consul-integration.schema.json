@@ -1,0 +1,54 @@
+{
+    "type": "object",
+    "properties": {
+        "exporter": {
+            "type": "object",
+            "properties": {
+                "allowStale": {
+                    "type": "boolean"
+                },
+                "datacenter": {
+                    "type": "string"
+                },
+                "server": {
+                    "type": "string"
+                }
+            }
+        },
+        "jobLabel": {
+            "type": "string"
+        },
+        "metrics": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "maxCacheSize": {
+                    "type": "null"
+                },
+                "scrapeInterval": {
+                    "type": "null"
+                },
+                "tuning": {
+                    "type": "object",
+                    "properties": {
+                        "excludeMetrics": {
+                            "type": "array"
+                        },
+                        "includeMetrics": {
+                            "type": "array"
+                        }
+                    }
+                }
+            }
+        },
+        "name": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string",
+            "const": "consul"
+        }
+    }
+}

@@ -5,12 +5,28 @@
       "items": {
         "anyOf": [
           { "$ref": "#/definitions/alloy-integration"},
+          { "$ref": "#/definitions/apache-integration"},
+          { "$ref": "#/definitions/blackbox-integration"},
+          { "$ref": "#/definitions/cadvisor-integration"},
           { "$ref": "#/definitions/cert-manager-integration"},
+          { "$ref": "#/definitions/consul-integration"},
+          { "$ref": "#/definitions/dnsmasq-integration"},
+          { "$ref": "#/definitions/elasticsearch-integration"},
           { "$ref": "#/definitions/etcd-integration"},
           { "$ref": "#/definitions/grafana-integration"},
+          { "$ref": "#/definitions/kafka-integration"},
           { "$ref": "#/definitions/loki-integration"},
+          { "$ref": "#/definitions/memcached-integration"},
           { "$ref": "#/definitions/mimir-integration"},
+          { "$ref": "#/definitions/mongodb-integration"},
+          { "$ref": "#/definitions/mssql-integration"},
           { "$ref": "#/definitions/mysql-integration"},
+          { "$ref": "#/definitions/oracledb-integration"},
+          { "$ref": "#/definitions/postgres-integration"},
+          { "$ref": "#/definitions/redis-integration"},
+          { "$ref": "#/definitions/snmp-integration"},
+          { "$ref": "#/definitions/squid-integration"},
+          { "$ref": "#/definitions/statsd-integration"},
           { "$ref": "#/definitions/tempo-integration"}
         ]
       }

@@ -38,7 +38,7 @@ prometheus.scrape "kube_scheduler" {
     insecure_skip_verify = true
   }
   clustering {
-    enabled = true
+    enabled = {{ include "alloy-metrics.clustering" . }}
   }
 {{- if or $metricAllowList $metricDenyList .Values.kubeScheduler.extraMetricProcessingRules }}
   forward_to = [prometheus.relabel.kube_scheduler.receiver]

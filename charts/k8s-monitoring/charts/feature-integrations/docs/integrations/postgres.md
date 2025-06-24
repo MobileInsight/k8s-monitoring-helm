@@ -1,103 +1,51 @@
-# PostgreSQL Integration
+# postgres
 
-The PostgreSQL integration uses the `prometheus.exporter.postgres` component to collect metrics from PostgreSQL databases.
+## Values
 
-## Configuration
+### Exporter Settings
 
-To enable PostgreSQL monitoring, add configuration to your values file:
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| exporter.address | string | `""` | The address of the PostgreSQL server. |
+| exporter.auth.password | string | `""` | The password for authentication. |
+| exporter.auth.passwordFrom | string | `""` | Raw config for accessing the password. |
+| exporter.auth.passwordKey | string | `"password"` | The key for storing the password in the secret. |
+| exporter.auth.username | string | `""` | The username for authentication. |
+| exporter.auth.usernameFrom | string | `""` | Raw config for accessing the username. |
+| exporter.auth.usernameKey | string | `"username"` | The key for storing the username in the secret. |
 
-```yaml
-postgres:
-  instances:
-    - name: my-postgres
-      exporter:
-        address: postgres.database.svc.cluster.local:5432
-        auth:
-          username: monitoring
-          password: monitoring-password
-```
+### General Settings
 
-### Connection Options
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| jobLabel | string | `"integration/postgres"` | The value of the job label for scraped metrics |
+| name | string | `""` | Name for this PostgreSQL instance. |
 
-The PostgreSQL exporter supports authentication through username/password:
+### Metrics Settings
 
-```yaml
-postgres:
-  instances:
-    - name: my-postgres
-      exporter:
-        # Connection string components
-        address: postgres.database.svc.cluster.local:5432
-        auth:
-          username: monitoring
-          password: monitoring-password
-```
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| metrics.enabled | bool | `true` | Whether to enable metrics collection from PostgreSQL. |
 
-### Using Kubernetes Secrets
+### Metric Processing Settings
 
-You can reference existing Kubernetes secrets for credentials:
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| metrics.maxCacheSize | string | `100000` | Sets the max_cache_size for prometheus.relabel component. This should be at least 2x-5x your largest scrape target or samples appended rate. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments)) Overrides global.maxCacheSize |
+| metrics.tuning.excludeMetrics | list | `[]` | Metrics to drop. Can use regular expressions. |
+| metrics.tuning.includeMetrics | list | `[]` | Metrics to keep. Can use regular expressions. |
 
-```yaml
-postgres:
-  instances:
-    - name: my-postgres
-      exporter:
-        address: postgres.database.svc.cluster.local:5432
-        auth:
-          usernameKey: postgres-user
-          passwordKey: postgres-password
-      secret:
-        create: false
-        name: postgres-credentials
-        namespace: database
-```
+### Scrape Settings
 
-### Metric Filtering
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| metrics.scrapeInterval | string | `60s` | How frequently to scrape metrics. |
 
-Control which metrics are collected:
+### Secret
 
-```yaml
-postgres:
-  instances:
-    - name: my-postgres
-      metrics:
-        scrapeInterval: 30s
-        tuning:
-          includeMetrics:
-            - pg_database_.*
-            - pg_stat_.*
-            - pg_replication_.*
-          excludeMetrics:
-            - pg_stat_bgwriter
-```
-
-## Available Metrics
-
-The PostgreSQL exporter provides metrics including:
-
-- Database size and statistics (`pg_database_*`)
-- Table statistics (`pg_stat_user_tables_*`)
-- Index statistics (`pg_stat_user_indexes_*`)
-- Replication metrics (`pg_replication_*`)
-- Connection metrics (`pg_stat_activity_*`)
-- Lock statistics (`pg_locks_*`)
-
-## Dashboards and Alerts
-
-Compatible Grafana dashboards:
-- [PostgreSQL Database](https://grafana.com/grafana/dashboards/9628)
-- [PostgreSQL Statistics](https://grafana.com/grafana/dashboards/455)
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Authentication failures**: Ensure the monitoring user has the necessary permissions:
-   ```sql
-   CREATE USER monitoring WITH PASSWORD 'monitoring-password';
-   GRANT pg_monitor TO monitoring;
-   ```
-
-2. **Connection timeouts**: Check that the PostgreSQL service is accessible from the monitoring namespace.
-
-3. **Missing metrics**: Some metrics require specific PostgreSQL extensions or permissions.
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| secret.create | bool | `true` | Whether to create a secret to store credentials. |
+| secret.embed | bool | `false` | If true, skip secret creation and embed the credentials directly into the configuration. |
+| secret.name | string | `""` | The name of the secret to create. |
+| secret.namespace | string | `""` | The namespace for the secret. |

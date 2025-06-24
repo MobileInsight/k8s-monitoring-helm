@@ -1,6 +1,4 @@
-# MongoDB Integration
-
-This integration uses the `prometheus.exporter.mongodb` component to collect metrics from MongoDB databases.
+# mongodb
 
 ## Values
 
@@ -8,19 +6,14 @@ This integration uses the `prometheus.exporter.mongodb` component to collect met
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| exporter.uri | string | `""` | MongoDB URI connection string. If provided, takes precedence. |
 | exporter.address | string | `""` | The address of the MongoDB server. |
-| exporter.auth.username | string | `""` | The username for authentication. |
 | exporter.auth.password | string | `""` | The password for authentication. |
-
-### Secret
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| secret.create | bool | `true` | Whether to create a secret to store credentials. |
-| secret.embed | bool | `false` | If true, embed credentials directly into configuration. |
-| secret.name | string | `""` | The name of the secret to create. |
-| secret.namespace | string | `""` | The namespace for the secret. |
+| exporter.auth.passwordFrom | string | `""` | Raw config for accessing the password. |
+| exporter.auth.passwordKey | string | `"password"` | The key for storing the password in the secret. |
+| exporter.auth.username | string | `""` | The username for authentication. |
+| exporter.auth.usernameFrom | string | `""` | Raw config for accessing the username. |
+| exporter.auth.usernameKey | string | `"username"` | The key for storing the username in the secret. |
+| exporter.uri | string | `""` | MongoDB URI connection string. If provided, this takes precedence over address/auth settings. |
 
 ### General Settings
 
@@ -33,38 +26,27 @@ This integration uses the `prometheus.exporter.mongodb` component to collect met
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| metrics.enabled | bool | `true` | Whether to enable metrics collection. |
+| metrics.enabled | bool | `true` | Whether to enable metrics collection from MongoDB. |
+
+### Metric Processing Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| metrics.maxCacheSize | string | `100000` | Sets the max_cache_size for prometheus.relabel component. This should be at least 2x-5x your largest scrape target or samples appended rate. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments)) Overrides global.maxCacheSize |
+| metrics.tuning.excludeMetrics | list | `[]` | Metrics to drop. Can use regular expressions. |
+| metrics.tuning.includeMetrics | list | `[]` | Metrics to keep. Can use regular expressions. |
+
+### Scrape Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
 | metrics.scrapeInterval | string | `60s` | How frequently to scrape metrics. |
 
-## Enabling
+### Secret
 
-```yaml
-integrations:
-  mongodb:
-    instances:
-      - name: app-database
-        exporter:
-          address: "mongodb.database.svc.cluster.local:27017"
-          auth:
-            username: monitoring
-            password: monitoring-password
-```
-
-Or with URI:
-
-```yaml
-integrations:
-  mongodb:
-    instances:
-      - name: app-database
-        exporter:
-          uri: "mongodb://user:pass@mongodb.database.svc.cluster.local:27017/admin"
-```
-
-## Available Metrics
-
-- `mongodb_up` - Whether MongoDB is up
-- `mongodb_instance_uptime_seconds` - Instance uptime
-- `mongodb_connections` - Number of connections
-- `mongodb_memory` - Memory usage statistics
-- `mongodb_mongod_wiredtiger_cache_bytes` - WiredTiger cache usage
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| secret.create | bool | `true` | Whether to create a secret to store credentials. |
+| secret.embed | bool | `false` | If true, skip secret creation and embed the credentials directly into the configuration. |
+| secret.name | string | `""` | The name of the secret to create. |
+| secret.namespace | string | `""` | The namespace for the secret. |

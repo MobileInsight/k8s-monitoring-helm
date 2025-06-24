@@ -1,0 +1,51 @@
+{
+    "type": "object",
+    "properties": {
+        "exporter": {
+            "type": "object",
+            "properties": {
+                "listenAddress": {
+                    "type": "string"
+                },
+                "mappingConfig": {
+                    "type": "string"
+                }
+            }
+        },
+        "jobLabel": {
+            "type": "string"
+        },
+        "metrics": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "maxCacheSize": {
+                    "type": "null"
+                },
+                "scrapeInterval": {
+                    "type": "null"
+                },
+                "tuning": {
+                    "type": "object",
+                    "properties": {
+                        "excludeMetrics": {
+                            "type": "array"
+                        },
+                        "includeMetrics": {
+                            "type": "array"
+                        }
+                    }
+                }
+            }
+        },
+        "name": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string",
+            "const": "statsd"
+        }
+    }
+}

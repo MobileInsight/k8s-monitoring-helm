@@ -1,0 +1,80 @@
+{
+    "type": "object",
+    "properties": {
+        "discovery": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "extraRelabelRules": {
+                    "type": "array"
+                },
+                "labelSelectors": {
+                    "type": "object"
+                },
+                "module": {
+                    "type": "string"
+                },
+                "namespaces": {
+                    "type": "array"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "protocol": {
+                    "type": "string"
+                }
+            }
+        },
+        "exporter": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "type": "string"
+                },
+                "module": {
+                    "type": "string"
+                },
+                "targets": {
+                    "type": "array"
+                }
+            }
+        },
+        "jobLabel": {
+            "type": "string"
+        },
+        "metrics": {
+            "type": "object",
+            "properties": {
+                "enabled": {
+                    "type": "boolean"
+                },
+                "maxCacheSize": {
+                    "type": "null"
+                },
+                "scrapeInterval": {
+                    "type": "null"
+                },
+                "tuning": {
+                    "type": "object",
+                    "properties": {
+                        "excludeMetrics": {
+                            "type": "array"
+                        },
+                        "includeMetrics": {
+                            "type": "array"
+                        }
+                    }
+                }
+            }
+        },
+        "name": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string",
+            "const": "blackbox"
+        }
+    }
+}

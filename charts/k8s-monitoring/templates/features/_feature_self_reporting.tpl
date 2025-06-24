@@ -52,7 +52,7 @@ prometheus.scrape "kubernetes_monitoring_telemetry" {
   targets    = discovery.relabel.kubernetes_monitoring_telemetry.output
   scrape_interval = {{ .Values.selfReporting.scrapeInterval | default .Values.global.scrapeInterval | quote}}
   clustering {
-    enabled = true
+    enabled = {{ include "alloy-metrics.clustering" . }}
   }
   forward_to = [prometheus.relabel.kubernetes_monitoring_telemetry.receiver]
 }

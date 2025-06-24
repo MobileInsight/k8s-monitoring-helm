@@ -43,7 +43,7 @@ declare "annotation_autodiscovery" {
     bearer_token_file = {{ .Values.bearerToken.token | quote }}
 {{- end }}
     clustering {
-      enabled = true
+      enabled = {{ include "alloy-metrics.clustering" . }}
     }
 {{- $metricRelabelRulesNeeded :=  or .Values.metricsTuning.includeMetrics .Values.metricsTuning.excludeMetrics .Values.extraMetricProcessingRules }}
 {{- $metricRelabelRulesNeeded =  or $metricRelabelRulesNeeded (and .Values.pods.enabled (or .Values.pods.staticLabels .Values.pods.staticLabelsFrom)) }}
@@ -65,7 +65,7 @@ declare "annotation_autodiscovery" {
       insecure_skip_verify = true
     }
     clustering {
-      enabled = true
+      enabled = {{ include "alloy-metrics.clustering" . }}
     }
 {{ if $metricRelabelRulesNeeded }}
     forward_to = [prometheus.relabel.annotation_autodiscovery.receiver]

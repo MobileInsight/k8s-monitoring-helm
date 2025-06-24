@@ -53,7 +53,7 @@ prometheus.scrape "kubelet_probes" {
   }
 
   clustering {
-    enabled = true
+    enabled = {{ include "alloy-metrics.clustering" . }}
   }
 
   forward_to = [prometheus.relabel.kubelet_probes.receiver]

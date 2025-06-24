@@ -8,6 +8,9 @@
       {{- if empty $mergedValues.name }}
         {{- fail (printf "redis instance %d is missing the 'name' field" $idx) }}
       {{- end }}
+      {{- if and $mergedValues.metrics.enabled (empty $mergedValues.exporter.address) }}
+        {{- fail (printf "redis instance '%s' is missing the 'exporter.address' field" $mergedValues.name) }}
+      {{- end }}
     {{- end }}
   {{- end }}
 {{- end }}

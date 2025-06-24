@@ -197,10 +197,12 @@ Alloy doesn't provide autoscaling out of the box, but you can use the Kubernetes
 
 ### Alloy Metrics
 
+The alloy-metrics collector can be deployed as either a StatefulSet (default) or a DaemonSet. See [DaemonSet Mode for Metrics Collection](./DaemonSet-Metrics.md) for detailed information about using DaemonSet mode.
+
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | alloy-metrics.controller.replicas | int | `1` | The number of replicas for the Alloy Metrics instance. |
-| alloy-metrics.controller.type | string | `"statefulset"` | The type of controller to use for the Alloy Metrics instance. |
+| alloy-metrics.controller.type | string | `"statefulset"` | The type of controller to use for the Alloy Metrics instance. Can be "statefulset" or "daemonset". |
 | alloy-metrics.enabled | bool | `false` | Deploy the Alloy instance for collecting metrics. |
 | alloy-metrics.extraConfig | string | `""` | Extra Alloy configuration to be added to the configuration file. |
 | alloy-metrics.liveDebugging.enabled | bool | `false` | Enable live debugging for the Alloy instance. |

@@ -14,6 +14,7 @@ declare "redis_integration" {
 {{- define "integrations.redis.include.metrics" }}
 {{- $defaultValues := "integrations/redis-values.yaml" | .Files.Get | fromYaml }}
 {{- with mergeOverwrite $defaultValues .instance (dict "type" "integration.redis") }}
+{{- if and .metrics.enabled .exporter.address }}
 {{- if and (hasKey . "secret") (eq (include "secrets.usesKubernetesSecret" .) "true") }}
   {{- include "secret.alloy" (deepCopy $ | merge (dict "object" .)) | nindent 0 }}
 {{- end }}
@@ -57,5 +58,6 @@ prometheus.relabel {{ include "helper.alloy_name" .name | quote }} {
 {{- end }}
   forward_to = argument.metrics_destinations.value
 }
+{{- end }}
 {{- end }}
 {{- end }}

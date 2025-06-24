@@ -53,7 +53,7 @@ prometheus.scrape "cadvisor" {
   }
 
   clustering {
-    enabled = true
+    enabled = {{ include "alloy-metrics.clustering" . }}
   }
 
   forward_to = [prometheus.relabel.cadvisor.receiver]

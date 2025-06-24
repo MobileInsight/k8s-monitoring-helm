@@ -239,6 +239,9 @@
                                 }
                             }
                         },
+                        "extraEnv": {
+                            "type": "array"
+                        },
                         "securityContext": {
                             "type": "object",
                             "properties": {

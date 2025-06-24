@@ -48,7 +48,11 @@ declare "tempo_integration" {
 
       selectors {
         role = "pod"
+{{- if eq (include "alloy-metrics.useDaemonSetFiltering" .) "true" }}
+        field = string.join(concat(coalesce(argument.field_selectors.value, []), ["spec.nodeName=" + sys.env("HOSTNAME")]), ",")
+{{- else }}
         field = string.join(coalesce(argument.field_selectors.value, []), ",")
+{{- end }}
         label = string.join(coalesce(argument.label_selectors.value, ["app.kubernetes.io/name=tempo"]), ",")
       }
 
@@ -213,7 +217,7 @@ tempo_integration_discovery {{ include "helper.alloy_name" .name | quote }} {
 tempo_integration_scrape  {{ include "helper.alloy_name" .name | quote }} {
   targets = tempo_integration_discovery.{{ include "helper.alloy_name" .name }}.output
   job_label = "integrations/tempo"
-  clustering = true
+  clustering = {{ include "alloy-metrics.clustering" . }}
 {{- if $metricAllowList }}
   keep_metrics = {{ $metricAllowList | join "|" | quote }}
 {{- end }}

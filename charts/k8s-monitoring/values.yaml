@@ -375,6 +375,7 @@ alloy-metrics:
     configMap: {create: false}
 
     # Enable clustering to ensure that scraping is distributed across all instances.
+    # Note: Clustering is automatically disabled when controller.type is set to "daemonset"
     # @ignored
     clustering:
       name: alloy-metrics
@@ -392,6 +393,11 @@ alloy-metrics:
     # resources:
     #   requests: {}
     #   limits: {}
+
+    # Environment variables for the Alloy container.
+    # Note: The HOSTNAME variable is automatically added by the Alloy helm chart when controller.type is "daemonset".
+    # @ignored
+    extraEnv: []
 
   controller:
     # -- The type of controller to use for the Alloy Metrics instance.

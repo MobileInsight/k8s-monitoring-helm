@@ -1,0 +1,111 @@
+# yamllint disable rule:document-start rule:line-length rule:trailing-spaces
+suite: Test Redis Integration - Metrics
+templates:
+  - configmap.yaml
+  - exporter-secrets.yaml
+tests:
+  - it: should create the Redis config
+    set:
+      deployAsConfigMap: true
+      redis:
+        instances:
+          - name: my-redis
+            exporter:
+              address: my-redis.redis.svc:6379
+              auth:
+                username: redis
+                password: redis-password
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]
+
+      - template: exporter-secrets.yaml
+        documentIndex: 0
+        containsDocument:
+          apiVersion: v1
+          kind: Secret
+          name: my-redis-release-name-feature-integrations
+          namespace: NAMESPACE
+      - template: exporter-secrets.yaml
+        equal:
+          path: stringData.password
+          value: redis-password
+
+  - it: works with multiple Redis Instances
+    set:
+      deployAsConfigMap: true
+      redis:
+        instances:
+          - name: test-redis
+            exporter:
+              address: redis.test.svc:6379
+          - name: staging-redis
+            exporter:
+              address: redis.staging.svc:6379
+              auth:
+                username: staging-user
+                password: staging-pass
+          - name: prod-redis
+            exporter:
+              address: redis.prod.svc:6379
+              auth:
+                username: prod-user
+                password: prod-pass
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]
+
+      - template: exporter-secrets.yaml
+        hasDocuments:
+          count: 2  # Two secrets should be created (staging and prod)
+
+  - it: works when referencing an external Redis Secret
+    set:
+      deployAsConfigMap: true
+      redis:
+        instances:
+          - name: test-redis
+            exporter:
+              address: test-redis.redis.svc:6379
+              auth:
+                usernameFrom: sys.env(REDIS_USER)
+                passwordKey: redis-password
+            secret:
+              create: false
+              name: test-redis-secret
+              namespace: redis
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]
+
+      - template: exporter-secrets.yaml
+        hasDocuments:
+          count: 0  # No secret should be created
+
+  - it: works with metrics disabled (no exporter address required)
+    set:
+      deployAsConfigMap: true
+      redis:
+        instances:
+          - name: my-redis
+            metrics:
+              enabled: false
+    asserts:
+      - template: configmap.yaml
+        isKind:
+          of: ConfigMap
+      - template: configmap.yaml
+        matchSnapshot:
+          path: data["metrics.alloy"]

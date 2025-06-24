@@ -110,7 +110,7 @@ prometheus.scrape "kube_dns" {
   scheme = "http"
   scrape_interval = {{ .Values.kubeDNS.scrapeInterval | default .Values.global.scrapeInterval | quote }}
   clustering {
-    enabled = true
+    enabled = {{ include "alloy-metrics.clustering" . }}
   }
 {{- if or $metricAllowList $metricDenyList .Values.kubeDNS.extraMetricProcessingRules }}
   forward_to = [prometheus.relabel.kube_dns.receiver]

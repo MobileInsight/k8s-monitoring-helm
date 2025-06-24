@@ -1,6 +1,4 @@
-# dnsmasq Integration
-
-This integration uses the `prometheus.exporter.dnsmasq` component to collect metrics from dnsmasq DNS/DHCP server.
+# dnsmasq
 
 ## Values
 
@@ -8,38 +6,32 @@ This integration uses the `prometheus.exporter.dnsmasq` component to collect met
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| exporter.address | string | `"localhost:53"` | The address of the dnsmasq server. |
-| exporter.leasesPath | string | `"/var/lib/misc/dnsmasq.leases"` | Path to dnsmasq leases file. |
+| exporter.address | string | `localhost:53` | The address of the dnsmasq server. |
+| exporter.leasesPath | string | `/var/lib/misc/dnsmasq.leases` | Path to dnsmasq leases file. |
 
 ### General Settings
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | jobLabel | string | `"integration/dnsmasq"` | The value of the job label for scraped metrics |
-| name | string | `""` | Name for this dnsmasq instance. |
+| name | string | `""` | Name for this DNS and DHCP server instance. |
 
 ### Metrics Settings
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| metrics.enabled | bool | `true` | Whether to enable metrics collection. |
+| metrics.enabled | bool | `true` | Whether to enable metrics collection from DNS and DHCP server. |
+
+### Metric Processing Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| metrics.maxCacheSize | string | `100000` | Sets the max_cache_size for prometheus.relabel component. This should be at least 2x-5x your largest scrape target or samples appended rate. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments)) Overrides global.maxCacheSize |
+| metrics.tuning.excludeMetrics | list | `[]` | Metrics to drop. Can use regular expressions. |
+| metrics.tuning.includeMetrics | list | `[]` | Metrics to keep. Can use regular expressions. |
+
+### Scrape Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
 | metrics.scrapeInterval | string | `60s` | How frequently to scrape metrics. |
-
-## Enabling
-
-```yaml
-integrations:
-  dnsmasq:
-    instances:
-      - name: dns-server
-        exporter:
-          address: "dnsmasq.kube-system.svc.cluster.local:53"
-          leasesPath: "/var/lib/dnsmasq/dnsmasq.leases"
-```
-
-## Available Metrics
-
-- `dnsmasq_leases` - Number of DHCP leases
-- `dnsmasq_cachesize` - Cache size
-- `dnsmasq_hits` - DNS cache hits
-- `dnsmasq_misses` - DNS cache misses

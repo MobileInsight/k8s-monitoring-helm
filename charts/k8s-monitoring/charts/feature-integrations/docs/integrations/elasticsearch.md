@@ -1,6 +1,4 @@
-# Elasticsearch Integration
-
-This integration uses the `prometheus.exporter.elasticsearch` component to collect metrics from Elasticsearch clusters.
+# elasticsearch
 
 ## Values
 
@@ -9,17 +7,12 @@ This integration uses the `prometheus.exporter.elasticsearch` component to colle
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | exporter.address | string | `""` | The address of the Elasticsearch server. |
-| exporter.auth.username | string | `""` | The username for authentication. |
 | exporter.auth.password | string | `""` | The password for authentication. |
-
-### Secret
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| secret.create | bool | `true` | Whether to create a secret to store credentials. |
-| secret.embed | bool | `false` | If true, embed credentials directly into configuration. |
-| secret.name | string | `""` | The name of the secret to create. |
-| secret.namespace | string | `""` | The namespace for the secret. |
+| exporter.auth.passwordFrom | string | `""` | Raw config for accessing the password. |
+| exporter.auth.passwordKey | string | `"password"` | The key for storing the password in the secret. |
+| exporter.auth.username | string | `""` | The username for authentication. |
+| exporter.auth.usernameFrom | string | `""` | Raw config for accessing the username. |
+| exporter.auth.usernameKey | string | `"username"` | The key for storing the username in the secret. |
 
 ### General Settings
 
@@ -32,27 +25,27 @@ This integration uses the `prometheus.exporter.elasticsearch` component to colle
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| metrics.enabled | bool | `true` | Whether to enable metrics collection. |
+| metrics.enabled | bool | `true` | Whether to enable metrics collection from Elasticsearch. |
+
+### Metric Processing Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| metrics.maxCacheSize | string | `100000` | Sets the max_cache_size for prometheus.relabel component. This should be at least 2x-5x your largest scrape target or samples appended rate. ([docs](https://grafana.com/docs/alloy/latest/reference/components/prometheus.relabel/#arguments)) Overrides global.maxCacheSize |
+| metrics.tuning.excludeMetrics | list | `[]` | Metrics to drop. Can use regular expressions. |
+| metrics.tuning.includeMetrics | list | `[]` | Metrics to keep. Can use regular expressions. |
+
+### Scrape Settings
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
 | metrics.scrapeInterval | string | `60s` | How frequently to scrape metrics. |
 
-## Enabling
+### Secret
 
-```yaml
-integrations:
-  elasticsearch:
-    instances:
-      - name: search-cluster
-        exporter:
-          address: "http://elasticsearch.elastic.svc.cluster.local:9200"
-          auth:
-            username: elastic
-            password: changeme
-```
-
-## Available Metrics
-
-- `elasticsearch_cluster_health_status` - Cluster health status
-- `elasticsearch_cluster_health_number_of_nodes` - Number of nodes in the cluster
-- `elasticsearch_cluster_health_active_shards` - Number of active shards
-- `elasticsearch_indices_docs_count` - Count of documents
-- `elasticsearch_jvm_memory_used_bytes` - JVM memory usage
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| secret.create | bool | `true` | Whether to create a secret to store credentials. |
+| secret.embed | bool | `false` | If true, skip secret creation and embed the credentials directly into the configuration. |
+| secret.name | string | `""` | The name of the secret to create. |
+| secret.namespace | string | `""` | The namespace for the secret. |

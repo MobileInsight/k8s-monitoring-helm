@@ -37,6 +37,8 @@ discovery.kubernetes {{ include "helper.alloy_name" .name | quote }} {
     role = "pod"
 {{- if .fieldSelectors }}
     field = {{ .fieldSelectors | join "," | quote }}
+{{- else if eq (include "alloy-metrics.useDaemonSetFiltering" $) "true" }}
+{{ include "alloy-metrics.nodeFilter" $ | indent 4 }}
 {{- end }}
     label = {{ $labelSelectors | join "," | quote }}
   }
