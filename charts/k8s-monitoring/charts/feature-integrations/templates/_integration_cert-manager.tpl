@@ -30,15 +30,17 @@ declare "cert_manager_integration" {
     {{- $labelSelectors = append $labelSelectors (printf "%s=%s" $k $v) }}
   {{- end }}
 {{- end }}
+{{- $fieldSelectors := .fieldSelectors | default list }}
+{{- if eq $.Values.global.metricsCollector.mode "daemonset" }}
+  {{- $fieldSelectors = append $fieldSelectors "spec.nodeName=$(HOSTNAME)" }}
+{{- end }}
 discovery.kubernetes {{ include "helper.alloy_name" .name | quote }} {
   role = "pod"
 
   selectors {
     role = "pod"
-{{- if .fieldSelectors }}
-    field = {{ .fieldSelectors | join "," | quote }}
-{{- else if eq (include "alloy-metrics.useDaemonSetFiltering" $) "true" }}
-{{ include "alloy-metrics.nodeFilter" $ | indent 4 }}
+{{- if $fieldSelectors }}
+    field = {{ $fieldSelectors | join "," | quote }}
 {{- end }}
     label = {{ $labelSelectors | join "," | quote }}
   }
@@ -146,7 +148,7 @@ prometheus.scrape {{ include "helper.alloy_name" .name | quote }} {
   job_name = {{ .jobLabel | quote }}
   scrape_interval = {{ .scrapeInterval | default $.Values.global.scrapeInterval | quote }}
   clustering {
-    enabled = true
+    enabled = {{ include "collector.clustering" $ }}
   }
   forward_to = [prometheus.relabel.{{ include "helper.alloy_name" .name }}.receiver]
 }

@@ -38,7 +38,7 @@ prometheus.scrape "kube_controller_manager" {
     insecure_skip_verify = true
   }
   clustering {
-    enabled = {{ include "alloy-metrics.clustering" . }}
+    enabled = {{ ne .Values.global.metricsCollector.mode "daemonset" }}
   }
 {{- if or $metricAllowList $metricDenyList .Values.kubeControllerManager.extraMetricProcessingRules }}
   forward_to = [prometheus.relabel.kube_controller_manager.receiver]

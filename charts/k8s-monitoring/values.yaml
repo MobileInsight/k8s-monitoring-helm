@@ -26,6 +26,13 @@ global:
   # @section -- Global Settings
   maxCacheSize: 100000
 
+  # -- Configuration for the metrics collector
+  # @section -- Global Settings
+  metricsCollector:
+    # -- The mode for the metrics collector. Set to "daemonset" when using alloy-metrics as a DaemonSet to enable node filtering.
+    # @section -- Global Settings
+    mode: "statefulset"
+
   alloyModules:
     # -- The source of the Alloy modules. The valid options are "configMap" or "git"
     # @section -- Global Settings
@@ -375,7 +382,7 @@ alloy-metrics:
     configMap: {create: false}
 
     # Enable clustering to ensure that scraping is distributed across all instances.
-    # Note: Clustering is automatically disabled when controller.type is set to "daemonset"
+    # IMPORTANT: Set enabled to false when using controller.type "daemonset"
     # @ignored
     clustering:
       name: alloy-metrics

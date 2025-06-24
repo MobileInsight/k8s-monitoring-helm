@@ -48,11 +48,7 @@ declare "loki_integration" {
 
       selectors {
         role = "pod"
-{{- if eq (include "alloy-metrics.useDaemonSetFiltering" .) "true" }}
-        field = string.join(concat(coalesce(argument.field_selectors.value, []), ["spec.nodeName=" + sys.env("HOSTNAME")]), ",")
-{{- else }}
         field = string.join(coalesce(argument.field_selectors.value, []), ",")
-{{- end }}
         label = string.join(coalesce(argument.label_selectors.value, ["app.kubernetes.io/name=loki"]), ",")
       }
 
@@ -205,11 +201,15 @@ declare "loki_integration" {
     {{- $labelSelectors = append $labelSelectors (printf "%s=%s" $k $v) }}
   {{- end }}
 {{- end }}
+{{- $fieldSelectors := .fieldSelectors | default list }}
+{{- if eq $.Values.global.metricsCollector.mode "daemonset" }}
+  {{- $fieldSelectors = append $fieldSelectors "spec.nodeName=$(HOSTNAME)" }}
+{{- end }}
 loki_integration_discovery {{ include "helper.alloy_name" .name | quote }} {
   namespaces = {{ .namespaces | toJson }}
   label_selectors = {{ $labelSelectors | toJson }}
-{{- if .fieldSelectors }}
-  field_selectors = {{ .fieldSelectors | toJson }}
+{{- if $fieldSelectors }}
+  field_selectors = {{ $fieldSelectors | toJson }}
 {{- end }}
   port_name = {{ .metrics.portName | quote }}
 }
@@ -217,7 +217,7 @@ loki_integration_discovery {{ include "helper.alloy_name" .name | quote }} {
 loki_integration_scrape  {{ include "helper.alloy_name" .name | quote }} {
   targets = loki_integration_discovery.{{ include "helper.alloy_name" .name }}.output
   job_label = "integrations/loki"
-  clustering = {{ include "alloy-metrics.clustering" . }}
+  clustering = {{ include "collector.clustering" $ }}
 {{- if $metricAllowList }}
   keep_metrics = {{ $metricAllowList | join "|" | quote }}
 {{- end }}

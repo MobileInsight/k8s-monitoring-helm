@@ -12,12 +12,6 @@ declare "cluster_metrics" {
   {{- if $discoverNodes }}
   discovery.kubernetes "nodes" {
     role = "node"
-{{- if eq (include "alloy-metrics.useDaemonSetFiltering" .) "true" }}
-    selectors {
-      role = "node"
-{{ include "alloy-metrics.nodeFilter" . | indent 6 }}
-    }
-{{- end }}
   }
 
   discovery.relabel "nodes" {

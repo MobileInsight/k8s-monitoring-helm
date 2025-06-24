@@ -60,7 +60,7 @@ prometheus.scrape "windows_exporter" {
   targets  = discovery.relabel.windows_exporter.output
   scrape_interval = {{ (index .Values "windows-exporter").scrapeInterval | default .Values.global.scrapeInterval | quote }}
   clustering {
-    enabled = {{ include "alloy-metrics.clustering" . }}
+    enabled = {{ ne .Values.global.metricsCollector.mode "daemonset" }}
   }
 {{- if or $metricAllowList $metricDenyList (index .Values "windows-exporter").extraMetricProcessingRules }}
   forward_to = [prometheus.relabel.windows_exporter.receiver]

@@ -49,7 +49,7 @@ prometheus.scrape "opencost" {
   honor_labels = true
   scrape_interval = {{ .Values.opencost.scrapeInterval | default .Values.global.scrapeInterval | quote }}
   clustering {
-    enabled = {{ include "alloy-metrics.clustering" . }}
+    enabled = {{ ne .Values.global.metricsCollector.mode "daemonset" }}
   }
 {{- if or $metricAllowList $metricDenyList .Values.opencost.extraMetricProcessingRules }}
   forward_to = [prometheus.relabel.opencost.receiver]

@@ -67,7 +67,7 @@ prometheus.scrape "kube_state_metrics" {
   }
 
   clustering {
-    enabled = {{ include "alloy-metrics.clustering" . }}
+    enabled = {{ ne .Values.global.metricsCollector.mode "daemonset" }}
   }
 
 {{- if or $metricAllowList $metricDenyList (index .Values "kube-state-metrics").extraMetricProcessingRules }}

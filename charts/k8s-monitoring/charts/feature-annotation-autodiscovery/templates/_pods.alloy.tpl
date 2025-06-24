@@ -22,13 +22,18 @@ discovery.kubernetes "pods" {
     {{- $labelSelectors = append $labelSelectors (printf "%s=%s" $k $v) }}
   {{- end }}
 {{- end }}
-{{- if or $labelSelectors (eq (include "alloy-metrics.useDaemonSetFiltering" .) "true") }}
+{{- if $labelSelectors }}
   selectors {
     role = "pod"
-{{- if $labelSelectors }}
     label = {{ $labelSelectors | join "," | quote }}
+{{- if and (eq .Values.global.metricsCollector.mode "daemonset") }}
+    field = "spec.nodeName=$(HOSTNAME)"
 {{- end }}
-{{ include "alloy-metrics.nodeFilter" . | indent 4 }}
+  }
+{{- else if and (eq .Values.global.metricsCollector.mode "daemonset") }}
+  selectors {
+    role = "pod"
+    field = "spec.nodeName=$(HOSTNAME)"
   }
 {{- end }}
 {{- include "feature.annotationAutodiscovery.attachNodeMetadata" . | indent 2 }}

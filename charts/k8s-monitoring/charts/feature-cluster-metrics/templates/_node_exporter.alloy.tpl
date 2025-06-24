@@ -153,7 +153,7 @@ prometheus.scrape "node_exporter" {
   }
 
   clustering {
-    enabled = {{ include "alloy-metrics.clustering" . }}
+    enabled = {{ ne .Values.global.metricsCollector.mode "daemonset" }}
   }
 
 {{- if or $metricAllowList $metricDenyList (index .Values "node-exporter").metricsTuning.dropMetricsForFilesystem (index .Values "node-exporter").extraMetricProcessingRules }}

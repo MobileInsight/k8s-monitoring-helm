@@ -61,7 +61,7 @@ prometheus.scrape "apiserver" {
   }
 
   clustering {
-    enabled = {{ include "alloy-metrics.clustering" . }}
+    enabled = {{ ne .Values.global.metricsCollector.mode "daemonset" }}
   }
 {{- if or $metricAllowList $metricDenyList .Values.apiServer.extraMetricProcessingRules }}
 

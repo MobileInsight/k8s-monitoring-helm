@@ -49,11 +49,7 @@ declare "alloy_integration" {
 
       selectors {
         role = "pod"
-{{- if eq (include "alloy-metrics.useDaemonSetFiltering" .) "true" }}
-        field = string.join(concat(coalesce(argument.field_selectors.value, []), ["spec.nodeName=" + sys.env("HOSTNAME")]), ",")
-{{- else }}
         field = string.join(coalesce(argument.field_selectors.value, []), ",")
-{{- end }}
         label = string.join(coalesce(argument.label_selectors.value, ["app.kubernetes.io/name=alloy"]), ",")
       }
 
@@ -244,21 +240,25 @@ declare "alloy_integration" {
     {{- $labelSelectors = append $labelSelectors (printf "%s=%s" $k $v) }}
   {{- end }}
 {{- end }}
+{{- $fieldSelectors := .fieldSelectors | default list }}
+{{- if eq $.Values.global.metricsCollector.mode "daemonset" }}
+  {{- $fieldSelectors = append $fieldSelectors "spec.nodeName=$(HOSTNAME)" }}
+{{- end }}
 alloy_integration_discovery {{ include "helper.alloy_name" .name | quote }} {
   port_name = {{ .metrics.portName | quote }}
 {{- if .namespaces }}
   namespaces = {{ .namespaces | toJson }}
 {{- end }}
   label_selectors = {{ $labelSelectors | toJson }}
-{{- if .fieldSelectors }}
-  field_selectors = {{ .fieldSelectors | toJson }}
+{{- if $fieldSelectors }}
+  field_selectors = {{ $fieldSelectors | toJson }}
 {{- end }}
 }
 
 alloy_integration_scrape  {{ include "helper.alloy_name" .name | quote }} {
   targets = alloy_integration_discovery.{{ include "helper.alloy_name" .name }}.output
   job_label = {{ .jobLabel | quote }}
-  clustering = {{ include "alloy-metrics.clustering" . }}
+  clustering = {{ include "collector.clustering" $ }}
 {{- if $metricAllowList }}
   keep_metrics = {{ $metricAllowList | join "|" | quote }}
 {{- end }}

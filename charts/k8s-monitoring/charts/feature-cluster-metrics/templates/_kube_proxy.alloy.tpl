@@ -34,7 +34,7 @@ prometheus.scrape "kube_proxy" {
   scheme            = "http"
   scrape_interval   = {{ .Values.kubeProxy.scrapeInterval | default .Values.global.scrapeInterval | quote }}
   clustering {
-    enabled = {{ include "alloy-metrics.clustering" . }}
+    enabled = {{ ne .Values.global.metricsCollector.mode "daemonset" }}
   }
 {{- if or $metricAllowList $metricDenyList .Values.kubeProxy.extraMetricProcessingRules }}
   forward_to = [prometheus.relabel.kube_proxy.receiver]
