@@ -1,0 +1,114 @@
+# yamllint disable rule:document-start rule:line-length rule:trailing-spaces
+suite: Test DaemonSet mode configuration
+templates:
+  - features/_feature_annotation_autodiscovery.tpl
+  - features/_feature_cluster_metrics.tpl
+  - features/_feature_integrations.tpl
+  - features/_feature_self_reporting.tpl
+  - alloy-config.yaml
+release:
+  name: test
+  namespace: monitoring
+chart:
+  version: 1.0.0
+  appVersion: 1.0.0
+tests:
+  - it: should disable clustering when metricsCollector.mode is daemonset
+    set:
+      cluster:
+        name: test-cluster
+      global:
+        metricsCollector:
+          mode: "daemonset"
+      destinations:
+        - name: prometheus
+          type: prometheus
+          url: http://prometheus:9090/api/v1/write
+      annotationAutodiscovery:
+        enabled: true
+      clusterMetrics:
+        enabled: true
+        cadvisor:
+          enabled: true
+      selfReporting:
+        enabled: true
+      integrations:
+        enabled: true
+        alloy:
+          instances:
+            - name: default
+              namespaces: ["monitoring"]
+      alloy-metrics:
+        enabled: true
+        controller:
+          type: daemonset
+      alloy-logs:
+        enabled: false
+      alloy-singleton:
+        enabled: false
+      alloy-receiver:
+        enabled: false
+      alloy-profiles:
+        enabled: false
+    templates:
+      - alloy-config.yaml
+    asserts:
+      - matchRegex:
+          path: data["config.alloy"]
+          pattern: |
+            clustering \{
+              enabled = false
+      - matchRegex:
+          path: data["config.alloy"]
+          pattern: |
+            field = "spec.nodeName=\$\(HOSTNAME\)"
+  
+  - it: should enable clustering when metricsCollector.mode is not daemonset
+    set:
+      cluster:
+        name: test-cluster
+      global:
+        metricsCollector:
+          mode: "statefulset"
+      destinations:
+        - name: prometheus
+          type: prometheus
+          url: http://prometheus:9090/api/v1/write
+      annotationAutodiscovery:
+        enabled: true
+      clusterMetrics:
+        enabled: true
+        cadvisor:
+          enabled: true
+      selfReporting:
+        enabled: true
+      integrations:
+        enabled: true
+        alloy:
+          instances:
+            - name: default
+              namespaces: ["monitoring"]
+      alloy-metrics:
+        enabled: true
+        controller:
+          type: deployment
+      alloy-logs:
+        enabled: false
+      alloy-singleton:
+        enabled: false
+      alloy-receiver:
+        enabled: false
+      alloy-profiles:
+        enabled: false
+    templates:
+      - alloy-config.yaml
+    asserts:
+      - matchRegex:
+          path: data["config.alloy"]
+          pattern: |
+            clustering \{
+              enabled = true
+      - notMatchRegex:
+          path: data["config.alloy"]
+          pattern: |
+            field = "spec.nodeName=\$\(HOSTNAME\)"
